@@ -8,5 +8,4 @@ __pycache__
 **_initial.py
 achievements/
 media
-*.pyc
 achiever/static/*
