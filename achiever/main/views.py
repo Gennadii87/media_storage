@@ -1,6 +1,8 @@
 import os
+import io
 import shutil
 from urllib.parse import urljoin
+import threading
 
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
@@ -45,6 +47,10 @@ class FileUploadViewSet(viewsets.ViewSet):
                 "folder": os.path.basename(path),
                 "content": []
             }
+
+            if not os.path.exists(path):
+                return result
+
             try:
                 for entry in os.listdir(path):
                     full_path = os.path.join(path, entry)
@@ -95,6 +101,11 @@ class FileUploadViewSet(viewsets.ViewSet):
 
             server_url = settings.SERVER_URL
             url = urljoin(server_url, f"{settings.MEDIA_URL}{path}{uploaded_file}")
+
+            # threading.Thread(target=self.compress_image, args=(url,)).start()
+            print(file_path)
+            self.compress_image_async(file_path)
+
             return Response({'file': url}, status=status.HTTP_201_CREATED)
 
         return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
@@ -120,6 +131,40 @@ class FileUploadViewSet(viewsets.ViewSet):
             print(f"Error opening image: {image_error}")
 
         return False
+
+    def compress_image_async(self, file_path):
+        thread = threading.Thread(target=self.compress_image, args=(file_path,))
+        thread.start()
+
+    @staticmethod
+    def compress_image(file_path):
+        try:
+            _, ext = os.path.splitext(file_path)
+            ext = ext.lower()
+
+            if ext == '.svg':
+                print(f"Skipping SVG file: {file_path}")
+                return
+            with open(file_path, 'rb') as file:
+                image = Image.open(file)
+
+                buffer = io.BytesIO()
+                if image.format == 'JPEG':
+                    image.save(buffer, format='JPEG', quality=35)
+
+                elif image.format == 'PNG':
+                    image = image.convert('P', palette=Image.ADAPTIVE)
+                    image.save(buffer, format='PNG', optimize=True)
+                else:
+                    print(f"Unsupported image format: {image.format}")
+                    return
+
+                buffer.seek(0)
+
+                with open(file_path, 'wb') as f:
+                    f.write(buffer.getvalue())
+        except Exception as e:
+            print(f"Error compressing image: {e}")
 
 
 @extend_schema(tags=["Media Storage"])
