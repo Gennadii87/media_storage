@@ -1,5 +1,3 @@
-[Описание проекта](https://git.infra.cloveri.com/cloveri.start/achiever/achiever/-/wikis/home)
-
 # media_storage
 
 ## Пример файла ".env"
