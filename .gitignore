@@ -9,5 +9,4 @@ __pycache__
 achievements/
 media
 *.pyc
-
-static/*
+achiever/static/*
