@@ -157,8 +157,8 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-# Настройки CORS ↓
-
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    "ORGANIZATION-ID",
-]
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.dummy',
+    }
+}
