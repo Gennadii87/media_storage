@@ -91,6 +91,13 @@ TEMPLATES = [
     },
 ]
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
 WSGI_APPLICATION = "achiever.wsgi.application"
 
 
@@ -150,15 +157,10 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Media API",
-    "DESCRIPTION": "Achiever media storage API",
-    "VERSION": "0.0.1",
+    "DESCRIPTION": "Media storage API",
+    "VERSION": "0.0.2",
     "CONTACT": {},
     "LICENSE": {},
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.dummy',
-    }
-}
